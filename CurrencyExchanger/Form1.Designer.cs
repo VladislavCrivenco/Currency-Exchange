@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms.DataVisualization.Charting;
 using CurrencyExchanger.Currencies;
 
 namespace PR_Lab2
@@ -31,6 +32,10 @@ namespace PR_Lab2
         /// </summary>
         private void InitializeComponent()
         {
+            chartArea1 = new ChartArea();
+            legend1 = new Legend();
+            series1 = new Series();
+             title1 = new Title();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.currentSellCurrencyLabel = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -59,9 +64,11 @@ namespace PR_Lab2
             this.label1 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
+            this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.chart)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -99,6 +106,7 @@ namespace PR_Lab2
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(251, 26);
             this.comboBox1.TabIndex = 7;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label7
             // 
@@ -195,6 +203,7 @@ namespace PR_Lab2
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(251, 26);
             this.comboBox2.TabIndex = 7;
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // label8
             // 
@@ -296,42 +305,45 @@ namespace PR_Lab2
             // BankSelector
             // 
             this.BankSelector.FormattingEnabled = true;
-            this.BankSelector.Location = new System.Drawing.Point(678, 227);
+            this.BankSelector.Location = new System.Drawing.Point(682, 227);
             this.BankSelector.Name = "BankSelector";
             this.BankSelector.Size = new System.Drawing.Size(121, 21);
             this.BankSelector.TabIndex = 18;
             // 
             // dateTimePicker
             // 
-            this.dateTimePicker.Location = new System.Drawing.Point(461, 227);
+            this.dateTimePicker.Location = new System.Drawing.Point(446, 227);
             this.dateTimePicker.Name = "dateTimePicker";
             this.dateTimePicker.Size = new System.Drawing.Size(200, 20);
             this.dateTimePicker.TabIndex = 17;
+            this.dateTimePicker.MaxDate = DateTime.Today;
             this.dateTimePicker.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
             // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(410, 231);
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label15.Location = new System.Drawing.Point(384, 231);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(45, 13);
+            this.label15.Size = new System.Drawing.Size(56, 16);
             this.label15.TabIndex = 16;
             this.label15.Text = "din data";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(310, 231);
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label14.Location = new System.Drawing.Point(248, 231);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(93, 13);
+            this.label14.Size = new System.Drawing.Size(130, 16);
             this.label14.TabIndex = 15;
-            this.label14.Text = "1 RON = 4.3 MDL";
+            this.label14.Text = "1 RON = 4.3000 MDL";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(150, 227);
+            this.label1.Location = new System.Drawing.Point(79, 229);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(145, 18);
             this.label1.TabIndex = 14;
@@ -340,7 +352,7 @@ namespace PR_Lab2
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(131, 416);
+            this.label13.Location = new System.Drawing.Point(12, 67);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(41, 13);
             this.label13.TabIndex = 15;
@@ -349,18 +361,41 @@ namespace PR_Lab2
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(778, 435);
+            this.label17.Location = new System.Drawing.Point(1013, 67);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(41, 13);
             this.label17.TabIndex = 16;
             this.label17.Text = "label17";
+            // 
+            // chart
+            // 
+            chartArea1.Name = "ChartArea1";
+            this.chart.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            //legend1.CellColumns.Add(new LegendCellColumn("header", LegendCellColumnType.Text, "text"));
+            this.chart.Legends.Add(legend1);
+            this.chart.Location = new System.Drawing.Point(70, 345);
+            this.chart.Name = "chart";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Legend = "Legend1";
+            series1.Name = "USD";
+            series1.YValuesPerPoint = 4;
+            this.chart.Series.Add(series1);
+            this.chart.Size = new System.Drawing.Size(906, 300);
+            this.chart.TabIndex = 17;
+            this.chart.Text = "chart";
+            title1.Name = "Title1";
+            title1.Text = "Dinamica in ultimele 7 zile";
+            this.chart.Titles.Add(title1);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.ClientSize = new System.Drawing.Size(1066, 642);
+            this.ClientSize = new System.Drawing.Size(1066, 690);
+            this.Controls.Add(this.chart);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.groupBox3);
@@ -375,6 +410,7 @@ namespace PR_Lab2
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.chart)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -417,6 +453,11 @@ namespace PR_Lab2
         private bool SellValueTextBoxChanged;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label17;
+        private Chart chart;
+        private ChartArea chartArea1;
+        private Legend legend1;
+        private Series series1;
+        private Title title1;
     }
 }
 

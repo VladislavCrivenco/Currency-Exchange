@@ -13,4 +13,9 @@ public class Currency
     public int Nominal { get; set; }
 
     public decimal Value { get; set; }
+
+    public override string ToString()
+    {
+        return Cod;
+    }
 }

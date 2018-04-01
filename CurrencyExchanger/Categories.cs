@@ -26,9 +26,6 @@ namespace PR_Lab2
 
         public static async Task Get(IProgress<List<Category>> progress)
         {
-            ICurrencySource source = new BNMCurrencySource();
-            await source.GetCurrencies();
-
             var remoteResult = await GetRemote();
             if (remoteResult == null)
             {

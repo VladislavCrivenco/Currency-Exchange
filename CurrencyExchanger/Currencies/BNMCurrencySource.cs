@@ -14,9 +14,8 @@ namespace CurrencyExchanger.Currencies
         private const string BankApi = "https://www.bnm.md/ro/official_exchange_rates";
         //"https://www.bnm.md/ro/official_exchange_rates?get_xml=1&date=25.03.2018";
 
-        public async Task<List<Currency>> GetCurrencies()
+        public async Task<List<Currency>> GetCurrencies(DateTime date)
         {
-            var date = DateTime.Today;
             var list = await GetRemoteCurrencies(date);
             list.Add(new Currency
             {
@@ -39,9 +38,9 @@ namespace CurrencyExchanger.Currencies
             return "BNM";
         }
 
-        public async Task<Currency> GetCurrency(string code)
+        public async Task<Currency> GetCurrency(string code, DateTime date)
         {
-            var list = await GetCurrencies();
+            var list = await GetCurrencies(date);
             return list.Where(x => x.Cod.ToLower().Equals(code.ToLower())).FirstOrDefault();
         }
 

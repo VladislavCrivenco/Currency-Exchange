@@ -22,20 +22,20 @@ namespace PR_Lab2
 
         private async void Form1_Load(object sender, EventArgs e)
         {
+            currentDateSelected = DateTime.Now;
             InitCurrencySources();
             await InitCurrencyPickers();
+
+            await InitHistoryChar(Currency.EurCode);
         }
 
         private async Task InitCurrencyPickers()
         {
-            currentSellCurrency = await currentCurrencySource.GetCurrency(Currency.UsdCode);
+            currentSellCurrency = await currentCurrencySource.GetCurrency(Currency.UsdCode, currentDateSelected);
             label13.Text = currentSellCurrency.Cod;
 
-
-            currentBuyCurrency = await currentCurrencySource.GetCurrency(Currency.MdlCode);
+            currentBuyCurrency = await currentCurrencySource.GetCurrency(Currency.MdlCode, currentDateSelected);
             label17.Text = currentBuyCurrency.Cod;
-            //currentBuyCurrency = new Currency();
-            //currentSellCurrency = new Currency();
 
             if (currentSellCurrency == null || currentBuyCurrency == null)
             {
@@ -44,6 +44,16 @@ namespace PR_Lab2
                 throw new ArgumentException("No default currency found");
             }
 
+            var currencies = await currentCurrencySource.GetCurrencies(currentDateSelected);
+            comboBox1.Items.AddRange(currencies.ToArray());
+            comboBox1.SelectedText = Currency.UsdCode;
+
+            comboBox2.Items.AddRange(currencies.ToArray());
+            comboBox2.SelectedText = Currency.MdlCode;
+
+
+
+            this.SellValueTextBox.Text = "1";
         }
 
         private void InitCurrencySources()
@@ -59,6 +69,38 @@ namespace PR_Lab2
             currentCurrencySource = sources[0];
         }
 
+        private async Task InitHistoryChar(string currencyCode)
+        {
+            var data = new List<(DateTime, decimal)>();
+            for (int i = 6; i >= 0; i--)
+            {
+                var date = DateTime.Now - TimeSpan.FromDays(i);
+                var currency = await currentCurrencySource.GetCurrency(currencyCode, date);
+                data.Add((date, currency.Value));
+            }
+
+            var min = data.Min((x) => x.Item2);
+            var max = data.Max((x) => x.Item2);
+
+            var delta = (max - min) / data.Count;
+            if (delta < 0.1m)
+            {
+                delta = 0.1m;
+            }
+            var interval = delta;
+
+            chartArea1.AxisY.Interval = (double)interval;
+            chartArea1.AxisY.Minimum = (double)(min - interval);
+            chartArea1.AxisY.Maximum = (double)(max + interval);
+            chartArea1.AxisX.IsMarginVisible = false;
+            series1.Name = currencyCode;
+
+            foreach (var point in data)
+            {
+                series1.Points.AddXY(point.Item1.ToShortDateString(), point.Item2);
+            }
+        }
+
         private void groupBox3_Enter(object sender, EventArgs e)
         {
 
@@ -69,56 +111,55 @@ namespace PR_Lab2
 
         }
 
-
-        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        private async void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
             currentDateSelected = dateTimePicker.Value;
+            await UpdateCurrentCurrencies();
+            UpdateCursLabel();
         }
 
         private async void currency_sell_label_click(object sender, EventArgs e)
         {
             var label = sender as Label;
 
-            ////invert currencies
-            //if (label.Text == currentBuyCurrencyLabel.Text)
-            //{
-            //    var oldValue = currentSellCurrencyLabel.Text;
-            //    currentBuyCurrency = await currentCurrencySource.GetCurrency(oldValue);
-            //    currentBuyCurrencyLabel.Text = currentBuyCurrency.Cod;
-            //}
+            //invert currencies
+            if (label.Text == currentBuyCurrencyLabel.Text)
+            {
+                var oldValue = currentSellCurrencyLabel.Text;
+                currentBuyCurrency = await currentCurrencySource.GetCurrency(oldValue, currentDateSelected);
+                currentBuyCurrencyLabel.Text = currentBuyCurrency.Cod;
+            }
 
-            currentSellCurrency = await currentCurrencySource.GetCurrency(label.Text);
+            currentSellCurrency = await currentCurrencySource.GetCurrency(label.Text, currentDateSelected);
             label13.Text = currentSellCurrency.Cod;
 
             currentSellCurrencyLabel.Text = currentSellCurrency.Cod;
 
-
             //raise onTextChangedEvent
-            var currenValue = SellValueTextBox.Text;
-            SellValueTextBox.Text = "";
-            SellValueTextBox.Text = currenValue;
+            UpdateSellValueTexBox();
+
+            UpdateCursLabel();
         }
 
         private async void currency_buy_label_click(object sender, EventArgs e)
         {
             var label = sender as Label;
 
-            ////invert currencies
-            //if (label.Text == currentSellCurrencyLabel.Text)
-            //{
-            //    var oldValue = currentBuyCurrencyLabel.Text;
-            //    currentSellCurrency = await currentCurrencySource.GetCurrency(oldValue);
-            //    currentSellCurrencyLabel.Text = currentSellCurrency.Cod;
-            //}
+            //invert currencies
+            if (label.Text == currentSellCurrencyLabel.Text)
+            {
+                var oldValue = currentBuyCurrencyLabel.Text;
+                currentSellCurrency = await currentCurrencySource.GetCurrency(oldValue, currentDateSelected);
+                currentSellCurrencyLabel.Text = currentSellCurrency.Cod;
+            }
 
-            currentBuyCurrency = await currentCurrencySource.GetCurrency(label.Text);
+            currentBuyCurrency = await currentCurrencySource.GetCurrency(label.Text, currentDateSelected);
             label17.Text = currentBuyCurrency.Cod;
             currentBuyCurrencyLabel.Text = currentBuyCurrency.Cod;
 
-            //raise onTextChangedEvent
-            var currenValue = BuyValueTextBox.Text;
-            BuyValueTextBox.Text = "";
-            BuyValueTextBox.Text = currenValue;
+            UpdateBuyValueTexBox();
+
+            UpdateCursLabel();
         }
 
         private void textBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -141,6 +182,36 @@ namespace PR_Lab2
             {
                 e.Handled = true;
             }
+        }
+
+        private void UpdateSellValueTexBox()
+        {
+            var currenValue = SellValueTextBox.Text;
+            SellValueTextBox.Text = "";
+            SellValueTextBox.Text = currenValue;
+        }
+
+        private void UpdateBuyValueTexBox()
+        {
+            var currenValue = BuyValueTextBox.Text;
+            BuyValueTextBox.Text = "";
+            BuyValueTextBox.Text = currenValue;
+        }
+
+        private void UpdateCursLabel()
+        {
+
+            string curs = "1 " + currentSellCurrencyLabel.Text + " = " + currentBuyCurrencyLabel.Text + " " +
+                          (currentSellCurrency.Value / currentBuyCurrency.Value).ToString("0.0000");
+
+            label14.Text = curs;
+        }
+
+        private async Task UpdateCurrentCurrencies()
+        {
+            currentSellCurrency = await currentCurrencySource.GetCurrency(currentSellCurrency.Cod, currentDateSelected);
+
+            currentBuyCurrency = await currentCurrencySource.GetCurrency(currentBuyCurrency.Cod, currentDateSelected);
         }
 
         private void SellValueTextBox_TextChanged(object sender, EventArgs e)
@@ -167,7 +238,7 @@ namespace PR_Lab2
 
             var sellvalue = Decimal.Parse(SellValueTextBox.Text);
 
-            var resultValue = sellvalue * currentSellCurrency.Value * currentSellCurrency.Nominal;
+            var resultValue = sellvalue * (currentSellCurrency.Value / currentBuyCurrency.Value);
             BuyValueTextBox.Text = resultValue.ToString("0.0000");
         }
 
@@ -192,18 +263,31 @@ namespace PR_Lab2
 
             BuyValueTextBoxChanged = true;
 
-
             var buyValue = Decimal.Parse(BuyValueTextBox.Text);
-            if (currentSellCurrency.Cod == Currency.MdlCode)
-            {
-                var resultValue = buyValue * currentBuyCurrency.Value * currentBuyCurrency.Nominal;
-                SellValueTextBox.Text = resultValue.ToString("0.0000");
-            }
-            else
-            {
-                var resultValue = buyValue / currentSellCurrency.Value / currentSellCurrency.Nominal;
-                SellValueTextBox.Text = resultValue.ToString("0.0000");
-            }
+
+            var resultValue = buyValue * (currentBuyCurrency.Value / currentSellCurrency.Value);
+            SellValueTextBox.Text = resultValue.ToString("0.0000");
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var currency = (sender as ComboBox).SelectedItem as Currency;
+            currentSellCurrency = currency;
+            SellValueTextBox.Text = "1";
+            SellValueTextBox_TextChanged(null, null);
+
+            currentSellCurrencyLabel.Text = currentSellCurrency.Cod;
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var currency = (sender as ComboBox).SelectedItem as Currency;
+            currentBuyCurrency = currency;
+            BuyValueTextBox.Text = "1";
+            BuyValueTextBox_TextChanged(null, null);
+
+            currentBuyCurrencyLabel.Text = currentBuyCurrency.Cod;
+
         }
     }
 }
