@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using PR_Lab2.Currencies;
 
 namespace PR_Lab2
@@ -17,16 +18,31 @@ namespace PR_Lab2
     {
         public Form1()
         {
-            InitializeComponent();
+            try
+            {
+
+                InitializeComponent();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e);
+            }
         }
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            currentDateSelected = DateTime.Now;
-            InitCurrencySources();
-            await InitCurrencyPickers();
+            try
+            {
+                currentDateSelected = DateTime.Now;
+                InitCurrencySources();
+                await InitCurrencyPickers();
 
-            await InitHistoryChar(Currency.EurCode);
+                await InitHistoryChar(Currency.EurCode, DateTime.Now.Subtract(TimeSpan.FromDays(7)));
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         private async Task InitCurrencyPickers()
@@ -69,14 +85,19 @@ namespace PR_Lab2
             currentCurrencySource = sources[0];
         }
 
-        private async Task InitHistoryChar(string currencyCode)
+        private async Task InitHistoryChar(string currencyCode, DateTime finalDate)
         {
+            //finalDate =  DateTime.Now - TimeSpan.FromDays(47);
+            series1.Points.Clear();
+            title1.Text =
+                $"Dinamica pentru perioada {finalDate.ToShortDateString()} - {DateTime.Today.ToShortDateString()}";
             var data = new List<(DateTime, decimal)>();
-            for (int i = 6; i >= 0; i--)
-            {
-                var date = DateTime.Now - TimeSpan.FromDays(i);
-                var currency = await currentCurrencySource.GetCurrency(currencyCode, date);
-                data.Add((date, currency.Value));
+            var currentDate = DateTime.Now;
+            while (currentDate > finalDate) {
+                var currency = await currentCurrencySource.GetCurrency(currencyCode, currentDate);
+                data.Add((currentDate, currency.Value));
+
+                currentDate = currentDate.Subtract(TimeSpan.FromDays(1));
             }
 
             var min = data.Min((x) => x.Item2);
@@ -89,15 +110,25 @@ namespace PR_Lab2
             }
             var interval = delta;
 
-            chartArea1.AxisY.Interval = (double)interval;
-            chartArea1.AxisY.Minimum = (double)(min - interval);
-            chartArea1.AxisY.Maximum = (double)(max + interval);
+            chartArea1.AxisY.Interval = (double) interval;
+            chartArea1.AxisY.Minimum = (double) (min - interval);
+            chartArea1.AxisY.Maximum = (double) (max + interval);
             chartArea1.AxisX.IsMarginVisible = false;
+            chartArea1.AxisX.MajorGrid.Enabled = false;
+            chartArea1.AxisX.LabelStyle.Enabled = false;
             series1.Name = currencyCode;
 
             foreach (var point in data)
             {
-                series1.Points.AddXY(point.Item1.ToShortDateString(), point.Item2);
+                //series1.Points.AddXY(point.Item1.ToShortDateString(), point.Item2);
+                series1.Points.Add(new DataPoint
+                {
+
+                    ToolTip = point.Item1.ToShortDateString(),
+                    LabelToolTip = point.Item1.ToShortDateString(),
+                    XValue = point.Item1.Ticks,
+                    YValues = new double[] {(double) point.Item2}
+                });
             }
         }
 
@@ -112,6 +143,15 @@ namespace PR_Lab2
         }
 
         private async void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+            currentDateSelected = historyChartDatePicker.Value;
+
+            historyChartDatePicker.Enabled = false;
+            await InitHistoryChar(Currency.EurCode, currentDateSelected);
+            historyChartDatePicker.Enabled = true;
+        }
+
+        private async void dateTimePicker_ValueChanged(object sender, EventArgs e)
         {
             currentDateSelected = dateTimePicker.Value;
             await UpdateCurrentCurrencies();
@@ -287,6 +327,24 @@ namespace PR_Lab2
             BuyValueTextBox_TextChanged(null, null);
 
             currentBuyCurrencyLabel.Text = currentBuyCurrency.Cod;
+
+        }
+
+        private void chart_GetToolTipText(object sender, ToolTipEventArgs e)
+        {
+            //Check selected chart element is a data point and set tooltip text
+            if (e.HitTestResult.ChartElementType == ChartElementType.DataPoint)
+            {
+                //Get selected data point
+                DataPoint dataPoint = (DataPoint) e.HitTestResult.Object;
+
+                if (series1.Points.Contains(dataPoint))
+                {
+                    var ticks = (long)dataPoint.XValue;
+                    e.Text =  new DateTime(ticks).ToShortDateString() + ": " + dataPoint.YValues[0];
+                }
+
+            }
 
         }
     }

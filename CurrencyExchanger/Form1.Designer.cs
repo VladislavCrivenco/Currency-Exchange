@@ -32,10 +32,10 @@ namespace PR_Lab2
         /// </summary>
         private void InitializeComponent()
         {
-            chartArea1 = new ChartArea();
-            legend1 = new Legend();
-            series1 = new Series();
-             title1 = new Title();
+            chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            title1 = new System.Windows.Forms.DataVisualization.Charting.Title();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.currentSellCurrencyLabel = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -65,6 +65,7 @@ namespace PR_Lab2
             this.label13 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.chart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.historyChartDatePicker = new System.Windows.Forms.DateTimePicker();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -317,7 +318,7 @@ namespace PR_Lab2
             this.dateTimePicker.Size = new System.Drawing.Size(200, 20);
             this.dateTimePicker.TabIndex = 17;
             this.dateTimePicker.MaxDate = DateTime.Today;
-            this.dateTimePicker.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
+            this.dateTimePicker.ValueChanged += new System.EventHandler(this.dateTimePicker_ValueChanged);
             // 
             // label15
             // 
@@ -372,7 +373,6 @@ namespace PR_Lab2
             chartArea1.Name = "ChartArea1";
             this.chart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
-            //legend1.CellColumns.Add(new LegendCellColumn("header", LegendCellColumnType.Text, "text"));
             this.chart.Legends.Add(legend1);
             this.chart.Location = new System.Drawing.Point(70, 345);
             this.chart.Name = "chart";
@@ -388,6 +388,17 @@ namespace PR_Lab2
             title1.Name = "Title1";
             title1.Text = "Dinamica in ultimele 7 zile";
             this.chart.Titles.Add(title1);
+            this.chart.GetToolTipText += new System.EventHandler<System.Windows.Forms.DataVisualization.Charting.ToolTipEventArgs>(this.chart_GetToolTipText);
+            // 
+            // historyChartDatePicker
+            // 
+            this.historyChartDatePicker.Location = new System.Drawing.Point(70, 345);
+            this.historyChartDatePicker.Name = "historyChartDatePicker";
+            this.historyChartDatePicker.Size = new System.Drawing.Size(200, 20);
+            this.historyChartDatePicker.MaxDate = System.DateTime.Today;
+            this.historyChartDatePicker.TabIndex = 18;
+            this.historyChartDatePicker.ValueChanged += new System.EventHandler(this.dateTimePicker1_ValueChanged);
+
             // 
             // Form1
             // 
@@ -395,6 +406,7 @@ namespace PR_Lab2
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.ClientSize = new System.Drawing.Size(1066, 690);
+            this.Controls.Add(this.historyChartDatePicker);
             this.Controls.Add(this.chart);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.label13);
@@ -458,6 +470,7 @@ namespace PR_Lab2
         private Legend legend1;
         private Series series1;
         private Title title1;
+        private System.Windows.Forms.DateTimePicker historyChartDatePicker;
     }
 }
 

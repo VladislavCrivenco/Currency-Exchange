@@ -14,18 +14,27 @@ namespace CurrencyExchanger.Currencies
         private const string BankApi = "https://www.bnm.md/ro/official_exchange_rates";
         //"https://www.bnm.md/ro/official_exchange_rates?get_xml=1&date=25.03.2018";
 
+        private Dictionary<DateTime, List<Currency>> history = new Dictionary<DateTime, List<Currency>>();
+
         public async Task<List<Currency>> GetCurrencies(DateTime date)
         {
-            var list = await GetRemoteCurrencies(date);
-            list.Add(new Currency
+            if (!history.ContainsKey(date.Date))
             {
-                Cod = "MDL",
-                Name = "Leu Moldovenesc",
-                Nominal = 1,
-                Value = 1
-            });
-
-            return list;
+                var list = await GetRemoteCurrencies(date);
+                list.Add(new Currency
+                {
+                    Cod = "MDL",
+                    Name = "Leu Moldovenesc",
+                    Nominal = 1,
+                    Value = 1
+                });
+                history.Add(date.Date, list);
+                return list;
+            }
+            else
+            {
+                return history[date.Date];
+            }
         }
 
         public string GetSourceDescription()
