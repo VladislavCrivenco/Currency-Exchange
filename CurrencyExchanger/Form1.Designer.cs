@@ -310,6 +310,7 @@ namespace PR_Lab2
             this.BankSelector.Name = "BankSelector";
             this.BankSelector.Size = new System.Drawing.Size(121, 21);
             this.BankSelector.TabIndex = 18;
+            this.BankSelector.SelectedIndexChanged += new System.EventHandler(this.BankSelector_SelectedIndexChanged);
             // 
             // dateTimePicker
             // 

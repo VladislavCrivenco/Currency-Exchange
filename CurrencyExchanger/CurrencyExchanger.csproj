@@ -56,13 +56,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Categories.cs" />
-    <Compile Include="Category.cs" />
     <Compile Include="CsvParser.cs" />
     <Compile Include="Currencies\BNMCurrencySource.cs" />
     <Compile Include="Currencies\Currency.cs" />
     <Compile Include="Currencies\CurrencySourceList.cs" />
     <Compile Include="Currencies\ICurrencySource.cs" />
+    <Compile Include="Currencies\MAIBCurrencySource.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -70,21 +69,9 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="HistoryChartHelper.cs" />
     <Compile Include="HttpUtil.cs" />
-    <Compile Include="Order.cs" />
-    <Compile Include="Orders.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReportTree.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ReportTreeForm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ReportTreeForm.Designer.cs">
-      <DependentUpon>ReportTreeForm.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -98,9 +85,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="ReportTreeForm.resx">
-      <DependentUpon>ReportTreeForm.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

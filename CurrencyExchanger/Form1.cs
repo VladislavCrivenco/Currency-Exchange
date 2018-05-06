@@ -20,7 +20,6 @@ namespace PR_Lab2
         {
             try
             {
-
                 InitializeComponent();
             }
             catch (Exception e)
@@ -35,9 +34,6 @@ namespace PR_Lab2
             {
                 currentDateSelected = DateTime.Now;
                 InitCurrencySources();
-                await InitCurrencyPickers();
-
-                await InitHistoryChar(Currency.EurCode, DateTime.Now.Subtract(TimeSpan.FromDays(7)));
             }
             catch (Exception ex)
             {
@@ -61,15 +57,19 @@ namespace PR_Lab2
             }
 
             var currencies = await currentCurrencySource.GetCurrencies(currentDateSelected);
+            comboBox1.Text = "";
+            comboBox1.Items.Clear();
             comboBox1.Items.AddRange(currencies.ToArray());
             comboBox1.SelectedText = Currency.UsdCode;
 
+            comboBox2.Text = "";
+            comboBox2.Items.Clear();
             comboBox2.Items.AddRange(currencies.ToArray());
             comboBox2.SelectedText = Currency.MdlCode;
 
-
-
             this.SellValueTextBox.Text = "1";
+
+            await InitHistoryChar(Currency.EurCode, DateTime.Now.Subtract(TimeSpan.FromDays(7)));
         }
 
         private void InitCurrencySources()
@@ -80,7 +80,7 @@ namespace PR_Lab2
                 throw new ArgumentException("Cannot load without currency source");
             }
 
-            BankSelector.Items.AddRange(sources.Select(x => x.GetSourceDescription()).ToArray());
+            BankSelector.Items.AddRange(sources.ToArray());
             BankSelector.SelectedIndex = 0;
             currentCurrencySource = sources[0];
         }
@@ -346,6 +346,14 @@ namespace PR_Lab2
 
             }
 
+        }
+
+        private async void BankSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            currentCurrencySource = (sender as ComboBox).SelectedItem as ICurrencySource;
+            await InitCurrencyPickers();
+
+            UpdateSellValueTexBox();
         }
     }
 }

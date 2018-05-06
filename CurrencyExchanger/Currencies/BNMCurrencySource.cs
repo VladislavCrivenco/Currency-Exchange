@@ -13,6 +13,8 @@ namespace CurrencyExchanger.Currencies
     {
         private const string BankApi = "https://www.bnm.md/ro/official_exchange_rates";
         //"https://www.bnm.md/ro/official_exchange_rates?get_xml=1&date=25.03.2018";
+        //http://www.curs.md/ru/csv_graph_provider?currency[]=EUR&currency_rel=MDL&date_end=22.04.2018&date_start=08.04.2018&bank=bnm
+        //http://www.curs.md/ru/csv_graph_provider?currency[]=EUR&currency_rel=MDL&date_end=22.04.2018&date_start=04.04.2018&bank=mobiasbanca
 
         private Dictionary<DateTime, List<Currency>> history = new Dictionary<DateTime, List<Currency>>();
 

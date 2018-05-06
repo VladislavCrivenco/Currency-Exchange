@@ -4,7 +4,7 @@ public class Currency
     public static string UsdCode = "USD";
     public static string EurCode = "EUR";
     public static string RonCode = "RON";
-    public static string RubCode = "EUR";
+    public static string RubCode = "RUB";
 
     public string Name { get; set; }
 

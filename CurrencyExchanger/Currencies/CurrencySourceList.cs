@@ -13,7 +13,8 @@ namespace PR_Lab2.Currencies
         {
             return new List<ICurrencySource>
             {
-                new BNMCurrencySource()
+                new BNMCurrencySource(),
+                new MAIBCurrencySource()
             };
         }
     }
